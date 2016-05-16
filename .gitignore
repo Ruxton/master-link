@@ -1,3 +1,5 @@
 *.js
 *.css
 .sass-cache
+build/
+.ant-targets-build.xml

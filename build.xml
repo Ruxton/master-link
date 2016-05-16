@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Master Link" default="init" basedir=".">
+    <property environment="env"/>
+    <property file="master-link.build.properties"/>
+
+	<target name="init">
+		<echo />
+	</target>
+  <target name="checkout">
+      <echo message="Checking out plugin from SVN to ${dir.svn}" />
+      <exec executable="svn" dir="${dir.svn}">
+          <arg line="co http://svn.wp-plugins.org/master-link" />
+      </exec>
+  </target>
+	<target name="dev" depends="compile">
+		<echo message="Setting up dev environment.." />
+		<echo message="Copying to ${dir.dev}.." />
+    <copy todir="${dir.dev}/">
+			<fileset dir="${dir.src}" excludes="*.coffee,*.sass,*.css.map">
+			</fileset>
+		</copy>
+	</target>
+	<target name="build" depends="compile">
+		<echo message="Creating a new build.." />
+		<copy todir="${dir.build}/">
+			<fileset dir="${dir.src}" excludes="*.coffee,*.sass,*.css.map">
+			</fileset>
+		</copy>
+		<zip destfile="${dir.build}/master-link.zip">
+			<zipfileset dir="${dir.src}" prefix="itunes-affiliate-link-maker"/>
+		</zip>
+	</target>
+  <target name="compile" depends="clean,compilecoffee,compilesass"/>
+  <target name="compilecoffee" description="Compiles coffeescript files" depends="cleancoffee">
+    <apply executable="coffee">
+      <arg value="-c"/>
+      <fileset dir="${dir.src}" includes="**/*.coffee"/>
+    </apply>
+  </target>
+  <target name="compilesass" description="Compiles sass files" depends="cleansass">
+    <apply executable="sass" dest="${dir.src}" verbose="true" force="true" failonerror="true">
+      <srcfile />
+      <targetfile />
+      <fileset dir="${dir.src}" includes="**/*.sass" excludes="**/_*" />
+      <firstmatchmapper>
+        <globmapper from="*.sass" to="*.css" />
+      </firstmatchmapper>
+    </apply>
+  </target>
+  <target name="clean" depends="cleansass,cleancoffee" />
+  <target name="cleansass">
+    <delete>
+      <fileset dir="${dir.src}" includes="*.css *.css.map"/>
+    </delete>
+  </target>
+  <target name="cleancoffee">
+    <delete>
+      <fileset dir="${dir.src}" includes="*.js" excludes="JsBarcode.js"/>
+    </delete>
+  </target>
+	<target name="svn-update">
+		<echo message="Updating....." />
+		<echo message="Copying to ${dir.svn}.." />
+		<copy todir="${dir.svn}">
+			<fileset dir="${dir.latest}">
+			</fileset>
+		</copy>
+	</target>
+</project>

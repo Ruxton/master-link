@@ -93,7 +93,7 @@ if(!class_exists('MasterLink_Plugin'))
         "validation" => "^\d+$",
         "validation-error" => "Must be a number (valid characters [0-9])",
         "image" => "music-itunes.svg",
-        "verb" => "Download",
+        "verb" => "Buy",
         "search" => "https://itunes.apple.com/lookup?upc=%d",
       ),
       "applemusic" => array(
@@ -158,7 +158,7 @@ if(!class_exists('MasterLink_Plugin'))
         "validation" => "^[\d\w]+$",
         "validation-error" => "Must be a Google Play ID eg. Blduvfldunucxohaj73355i36fa",
         "image" => "music-google_play.svg",
-        "verb" => "Download",
+        "verb" => "Buy",
       ),
       "other" => array(
         "href" => "%s",

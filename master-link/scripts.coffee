@@ -26,28 +26,28 @@ embedSoundcloud = (url) ->
 
   jQuery.ajax(settings).done (response) ->
     oembed_html = response.html;
-    jQuery("#cover").html(oembed_html)
+    jQuery("#videoembed").html(oembed_html)
 
 jQuery ->
   $serviceLinks=jQuery("#service-links")
   $cover=jQuery("#cover")
   $info=jQuery("#info")
 
-  barcode=jQuery(".u-identifier").text()
+  # barcode=jQuery(".u-identifier").text()
+  #
+  # JsBarcode(".u-identifier", barcode, {
+  #   height: 30, fontSize: 14, format: "EAN13"
+  # })
+  #
+  # jQuery(".u-identifier").text = ""
 
-  JsBarcode(".u-identifier", barcode, {
-    height: 30, fontSize: 14, format: "EAN13"
-  })
 
-  jQuery(".u-identifier").text = ""
-
-
-  jQuery("#youtube .watch").on "click", (e) ->
-    youtube_url = e.target.parentElement.href
-    embedYouTubeVideo(youtube_url)
-  jQuery("#soundcloud .play").on "click", (e) ->
-    soundcloud_url = e.target.parentElement.href
-    embedSoundcloud(soundcloud_url)
+  # jQuery("#youtube .watch").on "click", (e) ->
+  #   youtube_url = e.target.parentElement.href
+  #   embedYouTubeVideo(youtube_url)
+  # jQuery("#soundcloud .play").on "click", (e) ->
+  #   soundcloud_url = e.target.parentElement.href
+  #   embedSoundcloud(soundcloud_url)
 
   jQuery(window).scroll () ->
     wScroll = jQuery(this).scrollTop()

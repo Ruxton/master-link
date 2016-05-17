@@ -27,7 +27,7 @@
 			</fileset>
 		</copy>
 		<zip destfile="${dir.build}/master-link.zip">
-			<zipfileset dir="${dir.src}" prefix="itunes-affiliate-link-maker"/>
+			<zipfileset dir="${dir.src}" prefix="master-link"/>
 		</zip>
 	</target>
   <target name="compile" depends="clean,compilecoffee,compilesass"/>

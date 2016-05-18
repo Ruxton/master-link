@@ -17,8 +17,8 @@
   </style>
 </head>
 <body id="master-link" class="h-product">
-  <div id="background" class="u-photo">
-    <img src="<?php echo $post_image;?>" />
+  <div id="background">
+    <img src="<?php echo $post_image;?>" class="u-photo" />
   </div>
   <div id="wrapper">
     <div id="header">

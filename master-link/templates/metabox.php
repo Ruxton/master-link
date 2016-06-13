@@ -3,14 +3,20 @@
   <div id="meta_inner">
     <p>Add links to remote stores below.  UPC will be used for microfromats on the page template &amp; searching for links in stores you haven't added.</p>
     <p><label for="master_link_upc"><?php _e("UPC") ?></label><input type="text" name="master_link_upc" id="master_link_upc" value="<?php echo $upc; ?>" class="large-text"/></p>
+    <p><label for="master_link_default"><?php _e("Default Service") ?></label><select name="master_link_default" id="master_link_default" class="large-text">
+      <?php foreach($this->services as $services_service_id => $service) : ?>
+        <?php $selected = ($services_service_id == $default_service); ?>
+        <option value="<?php echo $services_service_id; ?>"<?php echo $selected ? " SELECTED" : ""; ?>><?php echo $service["name"]; ?></option>
+      <?php endforeach; ?>>
+    </select></p>
     <span class="add button-primary alignright"><?php _e('Add Link'); ?></span>
-    <table class="form-table striped">
+    <table class="form-table striped sortable">
       <thead>
         <tr>
-          <th><?php _e('Service') ?></td>
-          <th><?php _e('ID/Link') ?></td>
-          <th><?php _e('Example') ?></td>
-          <th><?php _e('Actions') ?></td>
+          <th><?php _e('Service') ?></th>
+          <th><?php _e('ID/Link') ?></th>
+          <th><?php _e('Example') ?></th>
+          <th><?php _e('Actions') ?></th>
         </tr>
       </thead>
       <tbody id="template" style="display: none">
@@ -42,7 +48,7 @@
               return false;
           });
           jQuery(".remove").live('click', function() {
-              jQuery(this).parent().remove();
+              jQuery(this).parent().parent().remove();
           });
       });
     </script>

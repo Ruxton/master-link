@@ -232,7 +232,6 @@ if(!class_exists('MasterLink_Plugin'))
     function add_scripts() {
       if(get_option('master_link_plugin-use_template',1) == 1) {
         wp_enqueue_script("jquery");
-        wp_enqueue_script('master_link-redirecter', trailingslashit( plugin_dir_url(__FILE__) ).'master_link_redirecter.js', false );
         wp_enqueue_script('jsbarcode', trailingslashit( plugin_dir_url(__FILE__) ).'JsBarcode.js', false );
         wp_enqueue_script('master_link-scripts', trailingslashit( plugin_dir_url(__FILE__) ).'scripts.js', false );
         wp_enqueue_style('master_link-stylesheets', trailingslashit( plugin_dir_url(__FILE__) ).'stylesheet.css', false );
@@ -314,6 +313,7 @@ if(!class_exists('MasterLink_Plugin'))
     }
 
     function save_custom_meta( $post_id, $post, $update ) {
+
         if ( "master_link" != $post->post_type ) {
             return;
         }
@@ -322,21 +322,76 @@ if(!class_exists('MasterLink_Plugin'))
           update_post_meta($post_id, 'master_link_subtitle', sanitize_text_field($_REQUEST['master_link_subtitle']));
         }
 
+        if(isset($_REQUEST['master_link_default'])) {
+          update_post_meta($post_id, 'master_link_default',sanitize_text_field($_REQUEST['master_link_default']));
+        }
         if(isset($_REQUEST['master_link_service'])) {
+          $services_added = array();
           foreach($_REQUEST['master_link_service'] as $service) {
+            $services_added[$service["service"]] = true;
             $key = "master_link_plugin-".$service["service"]."_link_id";
             $val = sanitize_text_field($service['link_id']);
             if($val != "") {
               update_post_meta( $post_id, $key, $val );
             }
           }
-
-          if(isset($_REQUEST['master_link_upc'])) {
-            $key = "master_link_upc";
-            $val = sanitize_text_field($_REQUEST['master_link_upc']);
-            update_post_meta( $post_id, $key, $val );
+          $remove_services = array_diff_key($this->services,$services_added);
+          foreach($remove_services as $service => $data) {
+            $key = "master_link_plugin-".$service."_link_id";
+            delete_post_meta($post_id,$key);
           }
         }
+
+        if(isset($_REQUEST['master_link_upc'])) {
+          $key = "master_link_upc";
+          $val = sanitize_text_field($_REQUEST['master_link_upc']);
+          if($val != "") {
+            // $this->updateItunesAndAppleMusic($post_id,$val);
+            // $this->updateDeezer($post_id,$val);
+            $this->updateSpotify($post_id,$val);
+          }
+          update_post_meta( $post_id, $key, $val );
+        }
+    }
+
+    function updateItunesAndAppleMusic($post_id,$upc) {
+      if($itunes = $this->findItunes($upc)) {
+        update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes);
+        update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes);
+      }
+    }
+
+    function updateDeezer($post_id,$upc) {
+      if($deezer = $this->findDeezer($upc)) {
+        update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer);
+      }
+    }
+
+    function updateSpotify($post_id,$upc) {
+      if($spotify = $this->findSpotify($upc)) {
+        update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify);
+      }
+    }
+
+    function findItunes($upc) {
+      require_once "finders/base.php";
+      require_once "finders/itunes.php";
+      $finder = new MasterLinkiTunesFinder();
+      return $finder->find($upc);
+    }
+
+    function findDeezer($upc) {
+      require_once "finders/base.php";
+      require_once "finders/deezer.php";
+      $finder = new MasterLinkDeezerFinder();
+      return $finder->find($upc);
+    }
+
+    function findSpotify($upc) {
+      require_once "finders/base.php";
+      require_once "finders/spotify.php";
+      $finder = new MasterLinkSpotifyFinder();
+      return $finder->find($upc);
     }
 
     function show_master_link_meta_box() {
@@ -345,6 +400,7 @@ if(!class_exists('MasterLink_Plugin'))
       $values = get_post_custom( $post->ID );
       $app_links = $this->master_link_get_links();
       $upc = get_post_meta( $post->ID, 'master_link_upc', true);
+      $default_service = get_post_meta( $post->ID, 'master_link_default', true);
       $template_path = sprintf("%s/templates/",dirname(__FILE__));
 
       include $template_path."metabox.php";

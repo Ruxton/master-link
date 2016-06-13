@@ -28,19 +28,19 @@ embedSoundcloud = (url) ->
     oembed_html = response.html;
     jQuery("#videoembed").html(oembed_html)
 
+setupBarcode = () ->
+  barcode=jQuery("#upc .u-identifier").text()
+  JsBarcode("#upc .u-identifier", barcode, {
+    height: 30, fontSize: 14, format: "EAN13"
+  })
+  jQuery(".u-identifier").text = ""
+
 jQuery ->
   $serviceLinks=jQuery("#service-links")
   $cover=jQuery("#cover")
   $info=jQuery("#info")
 
-  # barcode=jQuery(".u-identifier").text()
-  #
-  # JsBarcode(".u-identifier", barcode, {
-  #   height: 30, fontSize: 14, format: "EAN13"
-  # })
-  #
-  # jQuery(".u-identifier").text = ""
-
+  setupBarcode()
 
   # jQuery("#youtube .watch").on "click", (e) ->
   #   youtube_url = e.target.parentElement.href

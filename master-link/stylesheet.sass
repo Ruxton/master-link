@@ -22,7 +22,7 @@
     opacity: .7
 
 #wrapper
-  width: 320px
+  max-width: 320px
   margin-left: auto
   margin-right: auto
 
@@ -52,7 +52,6 @@
     height: 320px
     width: 320px
     min-height: 110px
-    // transition: height .5s ease
 
 .info
   position: relative
@@ -79,14 +78,10 @@
     font-family: Roboto,sans-serif
 
 #service-links
-  width: 320px
-  margin-left: auto
-  margin-right: auto
   height: calc(100%-200px)
   padding-top: 425px
 
 #services
-  width: 320px
   height: calc(100% - 35px)
   overflow-x: hidden
   overflow-y: auto
@@ -95,7 +90,6 @@
   position: relative
   z-index: 2
   .service
-    width: 50%
     float: left
     cursor: pointer
     width: 100%
@@ -169,6 +163,8 @@ div#upc
   width: 100%
   padding: 2px 0
   text-align: center
-  background-color: #fff
+  background-color: #ffffff
   .u-identifier
-    background-color: #fff
+    background-color: #ffffff
+  canvas
+    z-index: 10

@@ -8,16 +8,17 @@ jQuery ->
     setupFields(event.target)
   jQuery("#master_link_upc").on "keyup", (event) ->
     input = event.target
-    console.log(checkUPC(input))
-
+    checkUPC(input)
+  setupSortable()
   return
+
+setupSortable = () ->
+  jQuery("table.sortable tbody#here").sortable().disableSelection()
 
 setupFields = (select) ->
   option = jQuery(select).find("option:selected")
   validation = option.data('validation')
   validation_error = option.data('validation_error')
-  console.log(validation)
-  console.log(validation_error)
 
   input = jQuery(select).parent().parent().children("td").children("input")
   input.attr("data-validation", ""+validation)
@@ -64,12 +65,10 @@ checkValidation = (input) ->
   value = jQuery(input).val()
   valid = regexp_pattern.test(value)
   if(!valid)
-    console.log("NO")
     jQuery(input).parent("td").addClass("form-invalid")
     if(jQuery(input).parent("td").children("div.error").length == 0)
       errorHtml = "<div class=\"inline error\" style=\"position: absolute;\">"+ validation_error + "</span>"
       parent = jQuery(input).parent("td")[0]
-      console.log(jQuery(parent));
       jQuery(parent).append(errorHtml)
   else
     jQuery(input).parent("td").find("div.error").remove()

@@ -9,7 +9,9 @@ Stable tag: 0.1.1
 Create links that link to multiple storefronts.  Great for music or software that is sold on many digital storefronts
 
 == Description ==
+Create links that link to multiple storefronts.  Great for music or software that is sold on many digital storefronts.
 
+If you enter a UPC barcode, Master Link will search iTunes, Apple Music, Spotify & Deezer for the UPC and update the information for those services.
 
 == Installation ==
 

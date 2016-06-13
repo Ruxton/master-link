@@ -22,5 +22,11 @@ If you enter a UPC barcode, Master Link will search iTunes, Apple Music, Spotify
 
 == Changelog ==
 
+= 0.2.0 =
+* Fixes some visual problems on mobile and adds the automatic searching of iTunes, Deezer & Spotify based on UPC.
+
+= 0.1.1 =
+* Some minor bug fixes
+
 = 0.1.0 =
 * Initial release

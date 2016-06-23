@@ -24,12 +24,21 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
                 'settings_section_master_link_plugin'
             ), 'master_link_plugin');
 
-            // add your setting's fields
+            // Add URL Slug field
             add_settings_field('master_link_plugin-slug', 'URL Slug', array(
                 &$this,
                 'settings_field_input_text_slug'
             ), 'master_link_plugin', 'wp_plugin_template-section');
 
+            // Add HUM config
+            if(class_exists(Hum) && is_plugin_active("hum/hum.php")) {
+              add_settings_field('master_link_plugin-hum', 'HUM Short URL Slug', array(
+                  &$this,
+                  'settings_field_input_text_hum'
+              ), 'master_link_plugin', 'wp_plugin_template-section');
+            }
+
+            // Add Use default template
             add_settings_field('master_link_plugin-use_template', 'Use Plugin Template', array(
                 &$this,
                 'settings_field_input_use_template'
@@ -43,6 +52,14 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
         public function settings_section_master_link_plugin()
         {
             echo 'These are the only paramters needed to get the plugin to work';
+        }
+
+        public function settings_field_input_text_hum()
+        {
+            $this->settings_field_input_text(array(
+              'field' => 'hum',
+              'default' => 'm'
+            ));
         }
 
         public function settings_field_input_text_slug()

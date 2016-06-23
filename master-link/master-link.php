@@ -170,6 +170,8 @@ if(!class_exists('MasterLink_Plugin'))
     {
       // Initialize Settings
       require_once(sprintf("%s/settings.php", dirname(__FILE__)));
+      include_once( ABSPATH . 'wp-admin/includes/plugin.php');
+
       $MasterLink_Plugin_Settings = new MasterLink_Plugin_Settings();
       $this->slug = get_option('master_link_plugin-slug',$this->slug);
 
@@ -181,6 +183,19 @@ if(!class_exists('MasterLink_Plugin'))
       add_action('save_post', array($this,'save_custom_meta'), 10, 3 );
       add_action( 'wp_enqueue_scripts',array($this,'add_scripts'));
       add_filter( 'single_template', array($this,'master_link_add_template'), 10);
+      if(class_exists(Hum) && is_plugin_active("hum/hum.php")) {
+        add_filter('hum_type_prefix', 'master_link_hum_type_prefix', 10, 2);
+      }
+    }
+
+    function master_link_hum_type_prefix( $prefix, $post_id ) {
+      $post = get_post( $post_id );
+
+      if ( $post->post_type == 'master_link' ) {
+        $prefix = get_option('master_link_plugin-hum','m');
+      }
+
+      return $prefix;
     }
 
     function master_link_add_template( $single_template )

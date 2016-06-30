@@ -4,7 +4,7 @@ Donate link: https://ignite.digitalignition.net/code/master-link-wordpress-plugi
 Tags: links, app store, digital storefronts, deezer, itunes, google play, steam, amazon, soundcloud, youtube
 Requires at least: 4.3.1
 Tested up to: 4.5.3
-Stable tag: 0.2.4
+Stable tag: 0.2.5
 
 Create links that link to multiple storefronts.  Great for music or software that is sold on many digital storefronts
 

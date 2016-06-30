@@ -4,7 +4,7 @@ Donate link: https://ignite.digitalignition.net/code/master-link-wordpress-plugi
 Tags: links, app store, digital storefronts, deezer, itunes, google play, steam, amazon, soundcloud, youtube
 Requires at least: 4.3.1
 Tested up to: 4.5.3
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 
 Create links that link to multiple storefronts.  Great for music or software that is sold on many digital storefronts
 
@@ -21,6 +21,12 @@ If you enter a UPC barcode, Master Link will search iTunes, Apple Music, Spotify
 1. Use the Master Links section in the sidebar
 
 == Changelog ==
+
+= 0.2.2 =
+* Fix bug in HUM implementation
+
+= 0.2.1 =
+* Add support for HUM Url Shortener
 
 = 0.2.0 =
 * Fixes some visual problems on mobile and adds the automatic searching of iTunes, Deezer & Spotify based on UPC.

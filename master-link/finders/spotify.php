@@ -8,8 +8,10 @@ class MasterLinkSpotifyFinder implements MasterLinkIFinder {
   public function find($upc) {
     $searchData = $this->getData($upc);
     if(isset($searchData->albums->items[0])) {
-      $returnVal = str_replace("https://open.spotify.com/","",$searchData->albums->items[0]->external_urls->spotify);
-      return $returnVal;
+      $return = array();
+      $return['id'] = str_replace("https://open.spotify.com/","",$searchData->albums->items[0]->external_urls->spotify);
+      $return['cover'] = $searchData->albums->images[0]->url;
+      return $return;
     } else {
       return null;
     }

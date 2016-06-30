@@ -5,7 +5,7 @@ Plugin URI:   https://ignite.digitalignition.net/code/master-link-wordpress-plug
 Description:  Create a page that links users to multiple remote services
 Author:       Greg Tangey
 Author URI:   http://ignite.digitalignition.net/
-Version:      0.2.2
+Version:      0.2.3
 */
 
 /*  Copyright 2015  Greg Tangey  (email : greg@digitalignition.net)
@@ -361,30 +361,48 @@ if(!class_exists('MasterLink_Plugin'))
           $key = "master_link_upc";
           $val = sanitize_text_field($_REQUEST['master_link_upc']);
           if($val != "") {
-            // $this->updateItunesAndAppleMusic($post_id,$val);
-            // $this->updateDeezer($post_id,$val);
+            $this->updateItunesAndAppleMusic($post_id,$val);
             $this->updateSpotify($post_id,$val);
+            $this->updateDeezer($post_id,$val);
           }
           update_post_meta( $post_id, $key, $val );
         }
     }
 
+
+    function getAttachmentIdFromSrc($image_src) {
+      global $wpdb;
+      $query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$image_src'";
+      $id = $wpdb->get_var($query);
+      return $id;
+    }
+
+    function updatePostImageIfImageNotExist($post_id,$url) {
+      if(!has_post_thumbnail($post_id)) {
+        $image = media_sideload_image($url, $post_id,'','src');
+        set_post_thumbnail($post_id,$this->getAttachmentIdFromSrc($image));
+      }
+    }
+
     function updateItunesAndAppleMusic($post_id,$upc) {
       if($itunes = $this->findItunes($upc)) {
-        update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes);
-        update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes);
+        update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes['id']);
+        update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $itunes['cover']);
       }
     }
 
     function updateDeezer($post_id,$upc) {
       if($deezer = $this->findDeezer($upc)) {
-        update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer);
+        update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $deezer['cover']);
       }
     }
 
     function updateSpotify($post_id,$upc) {
       if($spotify = $this->findSpotify($upc)) {
-        update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify);
+        update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $spotify['cover']);
       }
     }
 

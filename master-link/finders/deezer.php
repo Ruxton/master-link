@@ -5,10 +5,13 @@ class MasterLinkDeezerFinder implements MasterLinkIFinder {
   public function __construct() {
   }
 
-  public function find($upc) {
+  public function find($upc,$name) {
     $searchData = $this->getData($upc);
     if(isset($searchData->id)) {
-      return $searchData->id;
+      $return = array();
+      $return['id'] = $searchData->id;
+      $return['cover'] = $searchData->cover_xl;
+      return $return;
     } else {
       return null;
     }

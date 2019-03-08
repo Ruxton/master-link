@@ -7,4 +7,16 @@
 
         <?php submit_button(); ?>
     </form>
+<?php
+$client_id = get_option('master_link_plugin_spotify_client_id');
+$client_secret= get_option('master_link_plugin_spotify_client_secret');
+
+if(isset($client_id) && isset($client_secret)) {
+  echo "<h3>".__("Spotify Authentication Settings","master_link_plugin")."</h3>\n";
+  echo '<table class="form-table">';
+  $this->spotify_auth_settings();
+  do_settings_fields('master_link_plugin','master_link_plugin_spotify_auth_settings');
+  echo '</table>';
+}
+?>
 </div>

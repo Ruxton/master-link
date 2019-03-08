@@ -1,5 +1,5 @@
 <?php
 interface MasterLinkIFinder {
-  public function find($upc);
+  public function find($upc,$name);
 }
 ?>

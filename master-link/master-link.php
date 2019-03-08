@@ -5,7 +5,7 @@ Plugin URI:   https://ignite.digitalignition.net/code/master-link-wordpress-plug
 Description:  Create a page that links users to multiple remote services
 Author:       Greg Tangey
 Author URI:   http://ignite.digitalignition.net/
-Version:      0.2.0
+Version:      0.3.0
 */
 
 /*  Copyright 2015  Greg Tangey  (email : greg@digitalignition.net)
@@ -160,6 +160,14 @@ if(!class_exists('MasterLink_Plugin'))
         "image" => "music-google_play.svg",
         "verb" => "Buy",
       ),
+      "tidal" => array(
+        "href" => "https://tidal.com/au/store/%s",
+        "name" => "Tidal",
+        "validation" => "^\d+$",
+        "validation-error" => "Must be a Tidal ID eg. 66437760",
+        "image" => "music-tidal.svg",
+        "verb" => "Play",
+      ),
       "other" => array(
         "href" => "%s",
         "name" => "Other"
@@ -170,6 +178,8 @@ if(!class_exists('MasterLink_Plugin'))
     {
       // Initialize Settings
       require_once(sprintf("%s/settings.php", dirname(__FILE__)));
+      include_once( ABSPATH . 'wp-admin/includes/plugin.php');
+
       $MasterLink_Plugin_Settings = new MasterLink_Plugin_Settings();
       $this->slug = get_option('master_link_plugin-slug',$this->slug);
 
@@ -181,6 +191,25 @@ if(!class_exists('MasterLink_Plugin'))
       add_action('save_post', array($this,'save_custom_meta'), 10, 3 );
       add_action( 'wp_enqueue_scripts',array($this,'add_scripts'));
       add_filter( 'single_template', array($this,'master_link_add_template'), 10);
+      // if(class_exists(Hum) && is_plugin_active("hum/hum.php")) {
+        add_filter('hum_local_types', array($this,'master_link_hum_local_types'));
+        add_filter('hum_type_prefix', array($this,'master_link_hum_type_prefix'), 10, 2);
+      // }
+    }
+
+    function master_link_hum_local_types( $types ) {
+      $types[] = 'm';
+      return $types;
+    }
+
+    function master_link_hum_type_prefix( $prefix, $post_id ) {
+      $post = get_post( $post_id );
+
+      if ( $post->post_type == 'master_link' ) {
+        $prefix = get_option('master_link_plugin-hum','m');
+      }
+
+      return $prefix;
     }
 
     function master_link_add_template( $single_template )
@@ -345,53 +374,90 @@ if(!class_exists('MasterLink_Plugin'))
         if(isset($_REQUEST['master_link_upc'])) {
           $key = "master_link_upc";
           $val = sanitize_text_field($_REQUEST['master_link_upc']);
+          $title = $post->post_title;
+          $subtitle = sanitize_text_field($_REQUEST['master_link_subtitle']);
+
+          $query = $subtitle . " " . $title;
+
           if($val != "") {
-            // $this->updateItunesAndAppleMusic($post_id,$val);
-            // $this->updateDeezer($post_id,$val);
-            $this->updateSpotify($post_id,$val);
+            $this->updateItunesAndAppleMusic($post_id,$val,$query);
+            $this->updateSpotify($post_id,$val,$query);
+            $this->updateDeezer($post_id,$val,$query);
+            $this->updateTidal($post_id,$val,$query);
           }
           update_post_meta( $post_id, $key, $val );
         }
     }
 
+
+    function getAttachmentIdFromSrc($image_src) {
+      global $wpdb;
+      $query = "SELECT ID FROM {$wpdb->posts} WHERE guid='$image_src'";
+      $id = $wpdb->get_var($query);
+      return $id;
+    }
+
+    function updatePostImageIfImageNotExist($post_id,$url) {
+      if(!has_post_thumbnail($post_id)) {
+        $image = media_sideload_image($url, $post_id,'','src');
+        set_post_thumbnail($post_id,$this->getAttachmentIdFromSrc($image));
+      }
+    }
+
     function updateItunesAndAppleMusic($post_id,$upc) {
-      if($itunes = $this->findItunes($upc)) {
-        update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes);
-        update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes);
+      if($itunes = $this->findItunes($upc,$query)) {
+        update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes['id']);
+        update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $itunes['cover']);
       }
     }
 
     function updateDeezer($post_id,$upc) {
-      if($deezer = $this->findDeezer($upc)) {
-        update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer);
+      if($deezer = $this->findDeezer($upc,$query)) {
+        update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $deezer['cover']);
       }
     }
 
     function updateSpotify($post_id,$upc) {
-      if($spotify = $this->findSpotify($upc)) {
-        update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify);
+      if($spotify = $this->findSpotify($upc,$query)) {
+        update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify['id']);
+        $this->updatePostImageIfImageNotExist($post_id, $spotify['cover']);
       }
     }
 
-    function findItunes($upc) {
+    function updateTidal($post_id,$upc,$query) {
+      if($tidal = $this->findTidal($upc,$query)) {
+        update_post_meta($post_id,"master_link_plugin-tidal_link_id",$tidal['id']);
+      }
+    }
+
+    function findItunes($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/itunes.php";
       $finder = new MasterLinkiTunesFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
     }
 
-    function findDeezer($upc) {
+    function findDeezer($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/deezer.php";
       $finder = new MasterLinkDeezerFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
     }
 
-    function findSpotify($upc) {
+    function findSpotify($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/spotify.php";
       $finder = new MasterLinkSpotifyFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
+    }
+
+    function findTidal($upc,$query) {
+      require_once "finders/base.php";
+      require_once "finders/tidal.php";
+      $finder = new MasterLinkTidalFinder();
+      return $finder->find($upc,$query);
     }
 
     function show_master_link_meta_box() {

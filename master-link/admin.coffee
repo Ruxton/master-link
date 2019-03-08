@@ -13,7 +13,9 @@ jQuery ->
   return
 
 setupSortable = () ->
-  jQuery("table.sortable tbody#here").sortable().disableSelection()
+  table = jQuery("table.sortable tbody#here")
+  if(table.size())
+    table.sortable().disableSelection()
 
 setupFields = (select) ->
   option = jQuery(select).find("option:selected")

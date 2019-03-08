@@ -11,6 +11,10 @@
     </select></p>
     <span class="add button-primary alignright"><?php _e('Add Link'); ?></span>
     <table class="form-table striped sortable">
+      <col width="15%"/>
+      <col/>
+      <col width="8%"/>
+      <col width="10%"/>
       <thead>
         <tr>
           <th><?php _e('Service') ?></th>

@@ -5,7 +5,7 @@ Plugin URI:   https://ignite.digitalignition.net/code/master-link-wordpress-plug
 Description:  Create a page that links users to multiple remote services
 Author:       Greg Tangey
 Author URI:   http://ignite.digitalignition.net/
-Version:      0.2.6
+Version:      0.3.0
 */
 
 /*  Copyright 2015  Greg Tangey  (email : greg@digitalignition.net)
@@ -159,6 +159,14 @@ if(!class_exists('MasterLink_Plugin'))
         "validation-error" => "Must be a Google Play ID eg. Blduvfldunucxohaj73355i36fa",
         "image" => "music-google_play.svg",
         "verb" => "Buy",
+      ),
+      "tidal" => array(
+        "href" => "https://tidal.com/au/store/album/%s",
+        "name" => "Tidal",
+        "validation" => "^\d+$",
+        "validation-error" => "Must be a Tidal ID eg. 66437760",
+        "image" => "music-tidal.svg",
+        "verb" => "Stream",
       ),
       "other" => array(
         "href" => "%s",
@@ -366,10 +374,16 @@ if(!class_exists('MasterLink_Plugin'))
         if(isset($_REQUEST['master_link_upc'])) {
           $key = "master_link_upc";
           $val = sanitize_text_field($_REQUEST['master_link_upc']);
+          $title = $post->post_title;
+          $subtitle = sanitize_text_field($_REQUEST['master_link_subtitle'])
+
+          $query = $subtitle . " " . $title;
+
           if($val != "") {
-            $this->updateItunesAndAppleMusic($post_id,$val);
-            $this->updateSpotify($post_id,$val);
-            $this->updateDeezer($post_id,$val);
+            $this->updateItunesAndAppleMusic($post_id,$val,$query);
+            $this->updateSpotify($post_id,$val,$query);
+            $this->updateDeezer($post_id,$val,$query);
+            $this->updateTidal($post_id,$val,$query);
           }
           update_post_meta( $post_id, $key, $val );
         }
@@ -391,7 +405,7 @@ if(!class_exists('MasterLink_Plugin'))
     }
 
     function updateItunesAndAppleMusic($post_id,$upc) {
-      if($itunes = $this->findItunes($upc)) {
+      if($itunes = $this->findItunes($upc,$query)) {
         update_post_meta($post_id,"master_link_plugin-itunes_link_id",$itunes['id']);
         update_post_meta($post_id,"master_link_plugin-applemusic_link_id",$itunes['id']);
         $this->updatePostImageIfImageNotExist($post_id, $itunes['cover']);
@@ -399,38 +413,51 @@ if(!class_exists('MasterLink_Plugin'))
     }
 
     function updateDeezer($post_id,$upc) {
-      if($deezer = $this->findDeezer($upc)) {
+      if($deezer = $this->findDeezer($upc,$query)) {
         update_post_meta($post_id,"master_link_plugin-deezer_link_id",$deezer['id']);
         $this->updatePostImageIfImageNotExist($post_id, $deezer['cover']);
       }
     }
 
     function updateSpotify($post_id,$upc) {
-      if($spotify = $this->findSpotify($upc)) {
+      if($spotify = $this->findSpotify($upc,$query)) {
         update_post_meta($post_id,"master_link_plugin-spotify_link_id",$spotify['id']);
         $this->updatePostImageIfImageNotExist($post_id, $spotify['cover']);
       }
     }
 
-    function findItunes($upc) {
+    function updateTidal($post_id,$upc,$query) {
+      if($tidal = $this->findTidal($upc,$query)) {
+        update_post_meta($post_id,"master_link_plugin-tidal_link_id",$tidal['id']);
+      }
+    }
+
+    function findItunes($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/itunes.php";
       $finder = new MasterLinkiTunesFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
     }
 
-    function findDeezer($upc) {
+    function findDeezer($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/deezer.php";
       $finder = new MasterLinkDeezerFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
     }
 
-    function findSpotify($upc) {
+    function findSpotify($upc,$query) {
       require_once "finders/base.php";
       require_once "finders/spotify.php";
       $finder = new MasterLinkSpotifyFinder();
-      return $finder->find($upc);
+      return $finder->find($upc,$query);
+    }
+
+    function findTidal($upc,$query) {
+      require_once "finders/base.php";
+      require_once "finders/tidal.php";
+      $finder = new MasterLinkTidalFinder();
+      return $finder->find($upc,$query);
     }
 
     function show_master_link_meta_box() {

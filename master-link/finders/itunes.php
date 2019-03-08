@@ -5,7 +5,7 @@ class MasterLinkiTunesFinder implements MasterLinkIFinder {
   public function __construct() {
   }
 
-  public function find($upc) {
+  public function find($upc,$name) {
     $searchData = $this->getData($upc);
     if($searchData->resultCount > 0) {
       $return = array();

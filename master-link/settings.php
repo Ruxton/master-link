@@ -47,6 +47,92 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
             // register your plugin's settings
             register_setting('master_link_plugin', 'master_link_plugin-slug');
             register_setting('master_link_plugin', 'master_link_plugin-use_template');
+
+            $args = array(
+              'type' => 'string',
+              'default' => NULL,
+            );
+
+            register_setting('master_link_plugin', 'master_link_plugin_spotify_client_id', $args);
+            register_setting('master_link_plugin', 'master_link_plugin_spotify_client_secret', $args);
+            register_setting('master_link_plugin', 'master_link_plugin_spotify_auth', $args);
+
+            add_settings_section(
+              'master_link_plugin_spotify_client_settings',
+              __( 'Spotify Client Settings', 'master_link' ),
+              array($this,'spotify_client_settings'),
+              'master_link_plugin'
+            );
+
+            add_settings_section(
+              'master_link_plugin_spotify_auth_settings',
+              __( 'Spotify Authentication Settings', 'master_link' ),
+              array($this,'spotify_auth_settings'),
+              'master_link_plugin'
+            );
+
+            add_settings_field(
+              'master_link_plugin_spotify_auth',
+              __('Spotify authentication token','master_link'),
+              array($this,'disabled_text_callback'),
+              'master_link_plugin',
+              'master_link_plugin_spotify_auth_settings',
+              array(
+                'name' => 'master_link_plugin_spotify_auth'
+              )
+            );
+
+            add_settings_field(
+              'master_link_plugin_spotify_client_id',
+              __('Spotify Client ID','master_link'),
+              array($this,'text_callback'),
+              'master_link_plugin',
+              'master_link_plugin_spotify_client_settings',
+              array(
+                'name' => 'master_link_plugin_spotify_client_id'
+              )
+            );
+
+            add_settings_field(
+              'master_link_plugin_spotify_client_secret',
+              __('Spotify Client Secret','master_link'),
+              array($this,'text_callback'),
+              'master_link_plugin',
+              'master_link_plugin_spotify_client_settings',
+              array(
+                'name' => 'master_link_plugin_spotify_client_secret'
+              )
+            );
+        }
+
+        function spotify_auth_settings() {
+          require 'vendor/autoload.php';
+
+          $buttonText = "Connect to Spotify";
+
+          $session = new SpotifyWebAPI\Session(
+              get_option('record_label_spotify_client_id'),
+              get_option('record_label_spotify_client_secret'),
+              menu_page_url('record_label',false)
+          );
+          $api = new SpotifyWebAPI\SpotifyWebAPI();
+
+          if(isset($_GET['code'])) {
+            $session->requestAccessToken($_GET['code']);
+            update_option('record_label_spotify_auth',$session->getAccessToken(),true);
+            $buttonText = "Reconnect to Spotify";
+          }
+          elseif(get_option('record_label_spotify_auth') != NULL) {
+            $buttonText = "Reconnect to Spotify";
+          }
+
+          $options = [
+            'scope' => [
+              'user-read-email',
+            ],
+          ];
+
+          echo "<a href=\"".$session->getAuthorizeUrl($options)."\" class=\"button primary\">".$buttonText."</a>";
         }
 
         public function settings_section_master_link_plugin()

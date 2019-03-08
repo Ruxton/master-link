@@ -3,7 +3,7 @@ class MasterLinkSpotifyFinder implements MasterLinkIFinder {
   private static $uri_base = "https://api.spotify.com/v1/search?query=upc:%d&offset=0&limit=1&type=album";
 
   public function __construct() {
-    $spotifyAuthToken = get_option('record_label_spotify_auth');
+    $spotifyAuthToken = get_option('master_link_plugin_spotify_auth');
     if($spotifyAuthToken == NULL) {
       throw new Exception('Spotify authentication not setup');
     }

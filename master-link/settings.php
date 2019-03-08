@@ -60,7 +60,7 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
             add_settings_section(
               'master_link_plugin_spotify_client_settings',
               __( 'Spotify Client Settings', 'master_link' ),
-              array($this,'spotify_client_settings'),
+              null,
               'master_link_plugin'
             );
 
@@ -68,7 +68,7 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
               'master_link_plugin_spotify_auth_settings',
               __( 'Spotify Authentication Settings', 'master_link' ),
               array($this,'spotify_auth_settings'),
-              'master_link_plugin'
+              'master_link_plugin_auth_settings'
             );
 
             add_settings_field(
@@ -111,18 +111,18 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
           $buttonText = "Connect to Spotify";
 
           $session = new SpotifyWebAPI\Session(
-              get_option('record_label_spotify_client_id'),
-              get_option('record_label_spotify_client_secret'),
-              menu_page_url('record_label',false)
+              get_option('master_link_plugin_spotify_client_id'),
+              get_option('master_link_plugin_spotify_client_secret'),
+              menu_page_url('master_link_plugin',false)
           );
           $api = new SpotifyWebAPI\SpotifyWebAPI();
 
           if(isset($_GET['code'])) {
             $session->requestAccessToken($_GET['code']);
-            update_option('record_label_spotify_auth',$session->getAccessToken(),true);
+            update_option('master_link_plugin_spotify_auth',$session->getAccessToken(),true);
             $buttonText = "Reconnect to Spotify";
           }
-          elseif(get_option('record_label_spotify_auth') != NULL) {
+          elseif(get_option('master_link_plugin_spotify_auth') != NULL) {
             $buttonText = "Reconnect to Spotify";
           }
 
@@ -200,6 +200,16 @@ if (!class_exists('MasterLink_Plugin_Settings')) {
 
             // Render the settings template
             include(sprintf("%s/templates/settings.php", dirname(__FILE__)));
+        }
+
+        function text_callback(array $args) {
+          $option = get_option( $args['name'] );
+          echo "<input type=\"text\" class=\"large-text\" name=\"" . $args['name'] . "\" value=\"".$option."\" />";
+        }
+
+        function disabled_text_callback(array $args) {
+          $option = get_option( $args['name'] );
+          echo "<input type=\"text\" class=\"large-text\" disabled name=\"" . $args['name'] . "\" value=\"".$option."\" />";
         }
 
     }

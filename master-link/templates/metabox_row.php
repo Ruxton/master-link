@@ -1,6 +1,6 @@
 <tr class="master_link_row">
   <td scope="row">
-    <select name="master_link_service[<?php echo $serviceCount; ?>][service]" class="regular-text">
+    <select name="master_link_service[<?php echo $serviceCount; ?>][service]">
       <?php foreach($this->services as $services_service_id => $service) : ?>
         <?php $selected = ($services_service_id == $service_id); ?>
         <?php $eachValidation = $this->services[$services_service_id]['validation']; ?>

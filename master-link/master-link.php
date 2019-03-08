@@ -161,12 +161,12 @@ if(!class_exists('MasterLink_Plugin'))
         "verb" => "Buy",
       ),
       "tidal" => array(
-        "href" => "https://tidal.com/au/store/album/%s",
+        "href" => "https://tidal.com/au/store/%s",
         "name" => "Tidal",
         "validation" => "^\d+$",
         "validation-error" => "Must be a Tidal ID eg. 66437760",
         "image" => "music-tidal.svg",
-        "verb" => "Stream",
+        "verb" => "Play",
       ),
       "other" => array(
         "href" => "%s",
@@ -375,7 +375,7 @@ if(!class_exists('MasterLink_Plugin'))
           $key = "master_link_upc";
           $val = sanitize_text_field($_REQUEST['master_link_upc']);
           $title = $post->post_title;
-          $subtitle = sanitize_text_field($_REQUEST['master_link_subtitle'])
+          $subtitle = sanitize_text_field($_REQUEST['master_link_subtitle']);
 
           $query = $subtitle . " " . $title;
 

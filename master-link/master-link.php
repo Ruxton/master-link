@@ -5,7 +5,7 @@ Plugin URI:   https://ignite.digitalignition.net/code/master-link-wordpress-plug
 Description:  Create a page that links users to multiple remote services
 Author:       Greg Tangey
 Author URI:   http://ignite.digitalignition.net/
-Version:      0.4.0
+Version:      0.4.1
 */
 
 /*  Copyright 2015  Greg Tangey  (email : greg@digitalignition.net)

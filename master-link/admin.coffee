@@ -1,10 +1,10 @@
 jQuery ->
   jQuery(".master_link_row input[data-validation]").each (index,element)->
     checkValidation(element)
-  jQuery(".master_link_row input[data-validation]").live "keyup", (event) ->
+  jQuery(".master_link_row").on "keyup", "input[data-validation]", (event) ->
     input = event.target
     checkValidation(input)
-  jQuery(".master_link_row select").live "change", (event) ->
+  jQuery(".master_link_row").on "change", "select", (event) ->
     setupFields(event.target)
   jQuery("#master_link_upc").on "keyup", (event) ->
     input = event.target

@@ -51,7 +51,7 @@
               jQuery('#here').prepend(template);
               return false;
           });
-          jQuery(".remove").live('click', function() {
+          jQuery("#here").on('click', ".master_link_row .remove", function() {
               jQuery(this).parent().parent().remove();
           });
       });
